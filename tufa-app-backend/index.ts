@@ -1,37 +1,39 @@
 import "reflect-metadata";
 import { PrismaClient } from '@prisma/client';
-import { ObjectType, Field, Resolver, buildSchemaSync, Query, ID, Mutation, Arg } from 'type-graphql';
+import { ObjectType, Field, Resolver, buildSchemaSync, Query, ID, Mutation, Arg, InputType } from 'type-graphql';
 import express from 'express';
 import { graphqlHTTP } from 'express-graphql';
 
 const prisma = new PrismaClient();
 
-interface AuthRequestInput {
-    description: string;
-    userId: string;
-}
-
 @ObjectType()
 class AuthRequest {
-    @Field(type => ID)
-    id?: Number;
-    @Field(type => Date)
-    createdAt?: string;
-    @Field(type => String)
-    description?: string;
-    @Field(type => String)
-    userId?: string
+    @Field(() => ID)
+    id: number;
+    @Field(() => Date)
+    createdAt: Date;
+    @Field(() => String)
+    description: string;
+    @Field(() => String)
+    userId: string
+}
+@InputType()
+class AuthRequestInput {
+    @Field(() => String)
+    description: string;
+    @Field(() => String)
+    userId: string;
 }
 @Resolver(AuthRequest)
 class AuthRequestResolver {
-    @Query(() => AuthRequest, { nullable: false })
+    @Query(() => [AuthRequest], { nullable: false })
     async allAuthRequests() {
         return prisma.authRequest.findMany()
     }
     @Mutation(() => AuthRequest)
     async createAuthRequest(
-        @Arg("authRequestData") authRequestData: AuthRequestInput
-    ) {
+        @Arg("authRequestData", () => AuthRequestInput) authRequestData: AuthRequestInput
+    ): Promise<AuthRequest> {
         return prisma.authRequest.create({
             data: authRequestData
         })
