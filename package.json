@@ -1,0 +1,13 @@
+{
+    "name": "tufa-app",
+    "private": true,
+    "version": "1.0.0",
+    "scripts": {
+    },
+    "workspaces": [
+        "./packages/tufa-app-backend",
+        "./packages/tufa-app-client",
+        "./packages/tufa-app-req-simulator"
+
+    ]
+}
